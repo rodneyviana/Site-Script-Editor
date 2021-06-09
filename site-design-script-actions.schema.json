@@ -1,0 +1,975 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "JSON Schema for SiteScript Extensions",
+  "definitions": {
+    "activateSPFeature": {
+      "type": "object",        
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^activateSPFeature$"
+        },
+        "featureId": {
+          "type": "string",
+          "description": "The Guid of the feature to activate."
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["web", "site"],
+          "description": "The scope of the feature to activate."
+        }
+      },
+      "required": [ "featureId", "verb" ]        
+
+    },
+    "associateExtension": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^associateExtension$"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the extension."
+        },
+        "location": {
+          "type": "string",
+          "pattern": "^ClientSideExtension\\..*$",
+          "description": "If this extension creates commands, where the commands are display. Otherwise, this should be set to ClientSideExtension.ApplicationCustomizer."
+        },
+        "clientSideComponentId": {
+          "type": "string",
+          "description": "GUID of the extension."
+        },
+        "clientSideComponentProperties": {
+          "type": "string",
+          "description": "This is an optional parameter, which can be used to provide properties for the instance."
+        },
+        "registrationId": {
+          "type": "string",
+          "description": "This is an optional parameter, which indicates the type of the list to which extension is associated, if the extension is associated with lists."
+        },
+        "registrationType": {
+          "type": "string",
+          "pattern": "^$|^List$",
+          "description": "This is an optional parameter, which should be specified if the extension is associated with a list."
+        },
+        "scope": {
+          "type": "string",
+          "pattern": "^(Web|Site)$",
+          "description": "Indicates whether the extension is associated with a Web or a Site."
+        }
+      },
+      "required": [ "clientSideComponentId", "title", "location", "verb", "scope" ],
+      "additionalProperties": false
+    },
+    "createSPList": {
+      "type": "object",
+          "properties": {
+            "verb": {
+              "type": "string",
+              "pattern": "^createSPList$"
+            },
+            "listName": {
+              "type": "string",
+              "description": "An identifying name for the list."
+            },
+            "templateType": {
+              "type": "number",
+              "description": "Specifies the type of a list definition or a list template."
+            },
+            "addNavLink": {
+               "type": "boolean",
+               "description": "Add a link to this list into the Quicklaunch using this list's title."
+            },
+            "color": {
+               "type": "string",
+               "description": "Specifies the list color."
+            },
+            "icon": {
+               "type": "string",
+               "description": "Specifies the list icon."
+            },
+            "subactions": {
+              "description": "Sub-actions to run on the list.",
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  { "$ref": "#/definitions/SPListSubactions/setTitle" },
+                  { "$ref": "#/definitions/SPListSubactions/setDescription" },
+                  { "$ref": "#/definitions/SPListSubactions/addSPField" },
+                  { "$ref": "#/definitions/SPListSubactions/deleteSPField" },
+                  { "$ref": "#/definitions/SPListSubactions/addSPFieldXml" },
+                  { "$ref": "#/definitions/SPListSubactions/addSPLookupFieldXml" },
+                  { "$ref": "#/definitions/SPListSubactions/addSiteColumn" },
+                  { "$ref": "#/definitions/SPListSubactions/addSPView" },
+                  { "$ref": "#/definitions/SPListSubactions/removeSPView" },
+                  { "$ref": "#/definitions/SPListSubactions/addFile" },
+                  { "$ref": "#/definitions/SPListSubactions/addFolder" },
+                  { "$ref": "#/definitions/SPListSubactions/setDocumentTemplates" },
+                  { "$ref": "#/definitions/SPListSubactions/addContentType" },
+                  { "$ref": "#/definitions/SPListSubactions/removeContentType" },
+                  { "$ref": "#/definitions/SPListSubactions/setClientFormCustomFormatter" },
+                  { "$ref": "#/definitions/SPListSubactions/setSPFieldCustomFormatter" },
+                  { "$ref": "#/definitions/SPListSubactions/associateFieldCustomizer" },
+                  { "$ref": "#/definitions/SPListSubactions/associateListViewCommandSet" }
+                ]
+              },
+              "additionalItems": false
+            }
+          },
+          "required": [ "listName", "templateType", "verb" ],
+          "additionalProperties": false
+        },
+    "SPListSubactions": {
+      "addContentType": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addContentType$"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the ContentType to add."
+          }
+        },
+        "required": [ "name", "verb" ],
+        "additionalProperties": false
+      },
+      "removeContentType": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^removeContentType$"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the ContentType to remove."
+          }
+        },
+        "required": [ "name", "verb" ],
+        "additionalProperties": false
+      },
+      "setSPFieldCustomFormatter": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^setSPFieldCustomFormatter$"
+          },
+          "fieldDisplayName": {
+            "type": "string",
+            "description": "The DisplayName of the SPField to operate on."
+          },
+          "formatterJSON": {
+            "type": "object",
+            "description": "A JSON object to use as the field CustomFormatter."
+          }
+        },
+        "required": [ "fieldDisplayName", "verb", "formatterJSON" ],
+        "additionalProperties": false
+      },
+      "setTitle": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^setTitle$"
+          },
+          "title": {
+            "type": "string",
+            "description": "The new title of the list."
+          }
+        },
+        "required": [ "title", "verb" ],
+        "additionalProperties": false
+      },
+      "setDescription": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^setDescription$"
+          },
+          "description": {
+            "type": "string",
+            "description": "The new description of the list."
+          }
+        },
+        "required": [ "description", "verb" ],
+        "additionalProperties": false
+      },
+      "addSiteColumn": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addSiteColumn$"
+          },
+          "internalName": {
+            "type": "string",
+            "description": "The internal name of the site column to add."
+          },
+          "addToDefaultView": {
+            "type": "boolean",
+            "description": "Optional attribute that defaults to false. If true, the newly added field will also be added to the default view."
+          }
+        },
+        "required": [ "internalName", "verb" ],
+        "additionalProperties": false
+      },
+      "addSPField": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addSPField$"
+          },
+          "fieldType": {
+            "type": "string",
+            "pattern": "^(Text|Note|Number|Boolean|User|DateTime)$",
+            "description": "The type of field to add."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "The display name of the field."
+          },
+          "internalName": {
+            "type": "string",
+            "description": "Optional attribute. If provided, specifies the internal name of the field. If not provided, the internal name will be based on the display name"
+          },
+          "isRequired": {
+            "type": "boolean",
+            "description": "Whether this field is required to contain information."
+          },
+          "addToDefaultView": {
+            "type": "boolean",
+            "description": "Optional attribute that defaults to false. If true, the newly added field will also be added to the default view."
+          },
+          "enforceUnique": {
+            "type": "boolean",
+            "description": "Optional attribute that defaults to false. If true, then all values for this field must be unique."
+          },
+          "id": {
+            "type": "string",
+            "description": "Optional attribute. The ID Guid of the field. This needs to be uniquely generated Guid. It is strongly recommended that you include this attribute to ensure that this action is reentrant."
+          }
+        },
+        "required": [ "displayName", "fieldType", "isRequired", "verb" ],
+        "additionalProperties": false
+      },
+      "deleteSPField": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^deleteSPField$"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "The display name of the field to delete."
+          }
+        },
+        "required": [ "displayName" ],
+        "additionalProperties": false
+      },
+      "addSPFieldXml": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addSPFieldXml$"
+          },
+          "schemaXml": {
+            "type": "string",
+            "description": "The schemaXml specifying the field. See https://msdn.microsoft.com/en-us/library/office/aa979575.aspx"
+          },
+          "addToDefaultView": {
+            "type": "boolean",
+            "description": "Optional attribute that defaults to false. If true, the newly added field will also be added to the default view."
+          }
+        },
+        "required": [ "schemaXml", "verb" ],
+        "additionalProperties": false
+      },
+      "addSPLookupFieldXml": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addSPLookupFieldXml$"
+          },
+          "schemaXml": {
+            "type": "string",
+            "description": "The schemaXml specifying the field. See https://msdn.microsoft.com/en-us/library/office/aa979575.aspx"
+          },
+          "targetListName": {
+            "type": "string",
+            "description": "The name that identifies the list this lookup field is targeted against. Provide either this or targetListUrl."
+          },
+          "targetListUrl": {
+            "type": "string",
+            "description": "A web-relative url that identifies the list this lookup field is targeted against. Provide either this or targetListName."
+          },
+          "addToDefaultView": {
+            "type": "boolean",
+            "description": "Optional attribute that defaults to false. If true, the newly added field will also be added to the default view."
+          }
+        },
+        "required": [ "schemaXml", "verb" ],
+        "additionalProperties": false
+      },
+      "associateFieldCustomizer": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^associateFieldCustomizer$"
+          },
+          "internalName": {
+            "type": "string",
+            "description": "The internalName of the field to customize."
+          },
+          "clientSideComponentId": {
+            "type": "string",
+            "description": "GUID of the extension to use to customize the field."
+          },
+          "clientSideComponentProperties": {
+            "type": "string",
+            "description": "This is an optional parameter, which can be used to provide properties for the Field Customizer instance."
+          }
+        },
+        "required": [ "clientSideComponentId", "internalName", "verb" ],
+        "additionalProperties": false
+      },
+      "associateListViewCommandSet": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^associateListViewCommandSet$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the extension."
+          },
+          "location": {
+            "type": "string",
+            "pattern": "^(ClientSideExtension\\.ListViewCommandSet\\.ContextMenu|ClientSideExtension\\.ListViewCommandSet\\.CommandBar|ClientSideExtension\\.ListViewCommandSet)$",
+            "description": "Where the commands are displayed."
+          },
+          "clientSideComponentId": {
+            "type": "string",
+            "description": "GUID of the extension to use to customize the field."
+          },
+          "clientSideComponentProperties": {
+            "type": "string",
+            "description": "This is an optional parameter, which can be used to provide properties for the Field Customizer instance."
+          }
+        },
+        "required": [ "clientSideComponentId", "title", "location", "verb" ],
+        "additionalProperties": false
+      },
+      "addSPView": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addSPView$"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the view."
+          },
+          "viewFields": {
+            "description": "An array of the internal names of the fields of the view.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "query": {
+            "type": "string",
+            "description": "A CAML query string that contains the where clause for the view's query. See https://msdn.microsoft.com/en-us/library/ms462365"
+          },
+          "rowLimit": {
+            "type": "integer",
+            "description": "The row limit of the view."
+          },
+          "isPaged": {
+            "type": "boolean",
+            "description": "Whether the view is paged."
+          },
+          "makeDefault": {
+            "type": "boolean",
+            "description": "If true, the view will be made the default view of the list."
+          },
+          "scope": {
+            "type": "string",
+            "pattern": "^(Default|Recursive|RecursiveAll|FilesOnly)$",
+            "description": "Optional. The scope of the view. See https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.spviewscope.aspx"
+          },
+          "formatterJSON": {
+            "type": "object",
+            "description": "A JSON object to use as the view CustomFormatter."
+          },
+          "addLink": {
+            "type": "string",
+            "description": "If present and not null or empty, a link to the view will added to the QuickLaunch, using the provided string as a name."
+          },
+          "viewType2": {
+            "type": "string",
+            "description": "Optional parameter. Specifies type data for the view."
+          },
+          "replaceViewFields": {
+            "type": "boolean",
+            "description": "Optional parameter, defaulting to false. If true, the view fields already on the view will be replaced by the those specified by the viewFields paramter."
+          }
+        },
+        "required": [ "name", "viewFields", "query", "rowLimit", "isPaged" ],
+        "additionalProperties": false
+      },
+      "removeSPView": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^removeSPView$"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the view to remove."
+          }
+        },
+        "required": [ "name" ],
+        "additionalProperties": false
+      },
+      "addFile": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addFile$"
+          },
+          "destination": {
+            "type": "string",
+            "description": "The location in the library to copy the file to, including the filename, relative to the root of the library.",
+            "examples" : [
+              "Training Documents/Accounting/First Day.pdf"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "description": "Optional parameter. The location in the site script package to copy the file from, relative to the root directory. Provide either this or sourceUrl."
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "Optional parameter. The location in the tenant to copy the file from, as an absolute url. Provide either this or source."
+          }
+        },
+        "required": [ "verb", "destination" ],
+        "additionalProperties": false
+      },
+      "addFolder": {
+        "type": "object",        
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addFolder$"
+          },
+          "path": {
+            "type": "string",
+            "description": "The path of the new folder, relative to the root of the library.",
+            "examples" : [
+              "Training Documents/Accounting"
+            ]
+          }
+        },
+        "required": [ "verb", "path" ],
+        "additionalProperties": false
+      },
+      "setDocumentTemplates": {
+        "type": "object",
+        
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^setDocumentTemplates$"
+          },
+          "templateJSON": {
+            "type": "object",
+            "description": "A JSON object representing the new document templates."
+          }
+        },
+        "required": [ "verb", "templateJSON" ],
+        "additionalProperties": false
+      },
+      "setClientFormCustomFormatter": {
+        "type": "object",
+        "properties": {
+            "verb": {
+            "type": "string",
+            "pattern": "^setClientFormCustomFormatter$"
+            },
+            "clientFormCustomFormatter": {
+            "type": "object",
+            "description": "A JSON object representing the formatter for form."
+            }
+        },
+        "required": [ "clientFormCustomFormatter", "verb" ],
+        "additionalProperties": false
+      }
+    },
+    "addPrincipalToSPGroup": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^addPrincipalToSPGroup$"
+        },
+        "principal": {
+          "type": "string",
+          "description": "The name of principal to add to the SPGroup."
+        },
+        "group": {
+          "type": "string",
+          "description": "The SPGroup to add the principal to.",
+          "pattern": "^(Members|Owners|Visitors)$"
+        }
+      },
+      "required": [ "principal", "group", "verb" ]
+    },
+    "applyTheme": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^applyTheme$"
+        },
+        "themeName": {
+          "type": "string",
+          "description": "The name of the theme to apply. Provide either this or themeJson."
+        },
+        "themeJson": {
+          "type": "object",
+          "description": "An optional JSON object specifying the theme exactly. Provide either this or themeName. See https://docs.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-theming/sharepoint-site-theming-json-schema for information on how to generate this object."
+        }
+      },
+      "required": [ "verb" ]     
+    },
+    "setSiteLogo": {
+      "type": "object",
+          "properties": {
+            "verb": {
+              "type": "string",
+              "pattern": "^setSiteLogo$"
+            },
+            "url": {
+              "type": "string",
+              "description": "The URL of the new SiteLogo."
+            }
+          },
+          "required": [ "url", "verb" ]
+    },
+    "setSiteLogoFromFile": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^setSiteLogoFromFile$"
+        },
+        "source": {
+          "type": "string",
+          "description": "The location in the site script package to copy the image file from, relative to the root directory. Provide either this or sourceUrl."
+        },
+        "sourceUrl": {
+          "type": "string",
+          "description": "Optional parameter. The location in the tenant to copy the image file from, as an absolute url. Provide either this or source."
+        }
+      },
+      "required": [ "source", "verb" ]
+    },
+    "triggerFlow": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^triggerFlow$"
+        },
+        "url": {
+          "type": "string",
+          "description": "The trigger URL of the Flow."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the Flow."
+        },
+        "waitForReply": {
+          "type": "boolean",
+          "description": "If true, the script will expect that the Flow will call Microsoft.SharePoint.Utilities.WebTemplateExtensions.SiteScriptUtility.SetSiteScriptStageOutcome() when it has finished executing. Note that this will not cause the script to block. The script will keep executing, but for record-keeping purposes, the run will be considered incomplete until the reply is made."
+        },
+        "parameters": {
+          "type": "object",
+          "description": "An option set of parameters to pass into the Flow."
+        }
+      },
+      "required": [ "name", "url", "verb" ],
+      "additionalProperties": false
+    },
+    "installSolution": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^installSolution$"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the Solution."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the Solution."
+        }
+      },
+      "required": [ "id", "verb", "name" ],
+      "additionalProperties": false
+    },
+    "addNavLink": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^addNavLink$"
+        },
+        "url": {
+          "type": "string",
+          "description": "The url of the link to add."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the link"
+        },
+        "isWebRelative": {
+          "type": "boolean",
+          "description": "Optionally indicates whether the link is web-relative. The default is false."
+        },
+        "parentDisplayName": {
+          "type": "string",
+          "description": "Optional parameter. If provided, makes this nav link a child of the nav link with this displayName. If both this and parentUrl are provided, it searches for a link that matches both to be the parent."
+        },
+        "parentUrl": {
+          "type": "string",
+          "description": "Optional parameter. If provided, makes this nav link a child of the nav link with this url. If both this and parentDisplayName are provided, it searches for a link that matches both to be the parent."
+        },
+        "isParentUrlWebRelative": {
+          "type": "boolean",
+          "description": "Optional parameter. Indicates whether parentUrl is web-relative. The default is false."
+        },
+        "navComponent": {
+          "type": "string",
+          "description": "Which nav component to add the link to. The QuickLaunch is the default",
+          "pattern": "^(QuickLaunch|Hub|Footer)$"
+        }
+      },
+      "required": [ "displayName", "url", "verb" ],
+      "additionalProperties": false
+    },
+    "removeNavLink": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^removeNavLink$"
+        },
+        "url": {
+          "type": "string",
+          "description": "Optionally indicates the url of the link to remove. if this parameter is not provided, the link to be removed will be found based on the displayName only."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the link to remove."
+        },
+        "isWebRelative": {
+          "type": "boolean",
+          "description": "Optionally indicates whether the link is web-relative. The default is false."
+        },
+        "navComponent": {
+          "type": "string",
+          "description": "Which nav component to remove the link from. The QuickLaunch is the default",
+          "pattern": "^(QuickLaunch|Hub|Footer)$"
+        }
+      },
+      "required": [ "displayName", "verb" ],
+      "additionalProperties": false
+    },
+    "joinHubSite": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^joinHubSite$"
+        },
+        "hubSiteId": {
+          "type": "string",
+          "description": "A Guid specifying the hub site."
+        },
+        "name": {
+          "type": "string",
+          "description": "An optional string specifying the name of the hub site."
+        }
+      },
+      "required": [ "hubSiteId", "verb" ],
+      "additionalProperties": false
+    },
+    "createContentType": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^createContentType$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the content type."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description of the content type."
+        },
+        "parentName": {
+          "type": "string",
+          "description": "Name of the parent content type. Provide either this, parentId, or id."
+        },
+        "parentId": {
+          "type": "string",
+          "description": "Id of the parent content type. Provide either this, parentName, or id."
+        },
+        "id": {
+          "type": "string",
+          "description": "Id of the content type. Provide either this, parentName, or parentId."
+        },
+        "hidden": {
+          "type": "boolean",
+          "description": "Whether the content type is hidden."
+        },
+        "group": {
+          "type": "string",
+          "description": "Optional parameter. If provided, sets the group of the content type."
+        },
+        "subactions": {
+          "description": "Sub-actions to run on the content type.",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              { "$ref": "#/definitions/SPContentTypeSubactions/addSiteColumn" },
+              { "$ref": "#/definitions/SPContentTypeSubactions/removeSiteColumn" }
+            ]
+          },
+          "additionalItems": false
+        }
+      },
+      "required": [ "verb", "name", "hidden" ],
+      "additionalProperties": false
+    },
+    "SPContentTypeSubactions": {
+      "addSiteColumn": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^addSiteColumn$"
+          },
+          "internalName": {
+            "type": "string",
+            "description": "The internal name of the site column to add."
+          }
+        },
+        "required": [ "internalName", "verb" ],
+        "additionalProperties": false
+      },
+      "removeSiteColumn": {
+        "type": "object",
+        "properties": {
+          "verb": {
+            "type": "string",
+            "pattern": "^removeSiteColumn$"
+          },
+          "internalName": {
+            "type": "string",
+            "description": "The internal name of the site column to remove."
+          }
+        },
+        "required": [ "internalName", "verb" ],
+        "additionalProperties": false
+      }
+    },
+    "createSiteColumn": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^createSiteColumn$"
+        },
+        "fieldType": {
+          "type": "string",
+          "pattern": "^(Text|Note|Number|Boolean|User|DateTime)$",
+          "description": "The type of column to add."
+        },
+        "internalName": {
+          "type": "string",
+          "description": "Internal name of the column"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Optional display name of the column."
+        },
+        "isRequired": {
+          "type": "boolean",
+          "description": "Whether this column is required to contain information."
+        },
+        "group": {
+          "type": "string",
+          "description": "Optional attribute. If provided, sets the column group to which this column belongs."
+        },
+        "enforceUnique": {
+          "type": "boolean",
+          "description": "Optional attribute that defaults to false. If true, then all values for this column must be unique."
+        },
+        "id": {
+          "type": "string",
+          "description": "Optional attribute. The ID Guid of the field. This needs to be uniquely generated Guid. It is strongly recommended that you include this attribute to ensure that this action is reentrant."
+        }
+      },
+      "required": [ "fieldType", "verb", "internalName", "isRequired" ],
+      "additionalProperties": false
+    },
+    "createSiteColumnXml": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^createSiteColumnXml$"
+        },
+        "schemaXml": {
+          "type": "string",
+          "description": "The schemaXml specifying the field. See https://msdn.microsoft.com/en-us/library/office/aa979575.aspx"
+        },
+        "pushChanges": {
+          "type": "boolean",
+          "description": "Indicates whether this change should be pushed to lists that already reference this field. Defaults to true."
+        }
+      },
+      "required": [ "verb", "schemaXml" ],
+      "additionalProperties": false
+    },
+    "setSiteExternalSharingCapability": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^setSiteExternalSharingCapability$"
+        },
+        "capability": {
+          "type": "string",
+          "pattern": "^(Disabled|ExistingExternalUserSharingOnly|ExternalUserSharingOnly|ExternalUserAndGuestSharing)$",
+          "description": "A string specifying the sharing capability for the site."
+        }
+      },
+      "required": [ "capability", "verb" ],
+      "additionalProperties": false
+    },
+    "setRegionalSettings": {
+      "type": "object",
+      "properties": {
+        "verb": {
+          "type": "string",
+          "pattern": "^setRegionalSettings$"
+        },
+        "timeZone": {
+          "type": "integer",
+          "description": "A number specifying the time zone. See https://msdn.microsoft.com/library/microsoft.sharepoint.spregionalsettings.timezones.aspx"
+        },
+        "locale": {
+          "type": "integer",
+          "description": "A number specifying the culture by lcid. See https://msdn.microsoft.com/en-us/library/ms912047(v=winembedded.10).aspx"
+        },
+        "sortOrder": {
+          "type": "integer",
+          "description": "A number specifying the sort order. See https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.spregionalsettings.collation.aspx"
+        },
+        "hourFormat": {
+          "type": "string",
+          "pattern": "^(12|24)$",
+          "description": "Specifies whether the site should use 12-hour or 24-hour time."
+        }
+      },
+      "required": [ "sortOrder", "verb" ],
+      "additionalProperties": false
+    },
+    "setSiteBranding": {
+        "type": "object",
+        "properties": {
+            "verb": {
+                "type": "string",
+                "pattern": "^setSiteBranding$"
+            },
+            "navigationLayout": {
+                "type": "string",
+                "pattern": "^(Cascade|Megamenu)$",
+                "description": "Specifies the layout of the navigation. If this parameter is omitted, the layout will not be changed."
+            },
+            "headerLayout": {
+                "type": "string",
+                "pattern": "^(Standard|Compact)$",
+                "description": "Specifies the layout of the header. If this parameter is omitted, the layout will not be changed."
+            },
+            "headerBackground": {
+                "type": "string",
+                "pattern": "^(None|Neutral|Soft|Strong)$",
+                "description": "Specifies the emphasis on the background color of the header. If this parameter is omitted, it will not be changed."
+            },
+            "showFooter": {
+                "type": "boolean",
+                "description": "Specifies whether the footer should be visible. If this parameter is omitted. The visibility of the footer will not be changed."
+            }
+        },
+        "required": [ "verb" ],
+        "additionalProperties": false
+    }
+    },  
+    "type": "object",
+    "properties": {
+        "actions": {
+            "title": "array of supported actions",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    { "$ref": "#/definitions/activateSPFeature" },
+                    { "$ref": "#/definitions/associateExtension" },
+                    { "$ref": "#/definitions/addPrincipalToSPGroup" },
+                    { "$ref": "#/definitions/addNavLink" },
+                    { "$ref": "#/definitions/applyTheme" },
+                    { "$ref": "#/definitions/createContentType" },
+                    { "$ref": "#/definitions/createSiteColumn" },
+                    { "$ref": "#/definitions/createSiteColumnXml" },
+                    { "$ref": "#/definitions/createSPList" },
+                    { "$ref": "#/definitions/installSolution" },
+                    { "$ref": "#/definitions/joinHubSite" },
+                    { "$ref": "#/definitions/removeNavLink" },
+                    { "$ref": "#/definitions/setRegionalSettings" },
+                    { "$ref": "#/definitions/setSiteBranding" },
+                    { "$ref": "#/definitions/setSiteLogo" },
+                    { "$ref": "#/definitions/setSiteExternalSharingCapability" },
+                    { "$ref": "#/definitions/triggerFlow" }
+                ]
+            },
+            "additionalItems": false
+        },
+        "$schema": { "type": "string" }
+    },
+  "additionalProperties": false
+}
